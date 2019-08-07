@@ -1,5 +1,6 @@
 import React from 'react';
 import './Game.css';
+import ScorePanel from './ScorePanel';
 
 const Game: React.FC = () => {
   return (
@@ -7,6 +8,7 @@ const Game: React.FC = () => {
       <header>
         <h1>Matching Game</h1>
       </header>
+      <ScorePanel />
     </div>
   );
 }
