@@ -1,6 +1,12 @@
 import React from 'react';
 
-const ScorePanel: React.FC = () => {
+interface ScorePanelProps {
+  minutesDisplay: string,
+  secondsDisplay: string,
+  resetCb: () => void
+}
+
+const ScorePanel: React.FC<ScorePanelProps> = (props) => {
   return (
     <section className="score-panel">
       <ul className="stars">
@@ -11,10 +17,10 @@ const ScorePanel: React.FC = () => {
         <span className="moves">0</span> Moves 
         <span className="timer">
           Timer:
-          <span id="minutes">00</span>:<span id="seconds">00</span>
+          <span id="minutes">{props.minutesDisplay}</span>:<span id="seconds">{props.secondsDisplay}</span>
         </span>
         <div className="restart">
-          <i className="fa fa-repeat"></i>
+          <i className="fa fa-repeat" onClick={props.resetCb}></i>
         </div>
     </section>
   );
