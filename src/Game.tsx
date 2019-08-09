@@ -77,10 +77,10 @@ const Game: React.FC = () => {
   ]);
   let [seconds, setSeconds] = useState(0);
   let [isTimerActive, setIsTimerActive] = useState(false);
-  // let [openCardIndex, setOpenCardIndex] = useState<number>(-1);
+  let [openCardIndex, setOpenCardIndex] = useState<number>(-1);
 
   const handeCardClick = (index: number) => {
-    if (cards[index].classNames.includes('open')) {
+    if (cards[index].classNames.includes('open') || cards[index].classNames.includes('match')) {
       return;
     }
 
@@ -89,30 +89,63 @@ const Game: React.FC = () => {
       toggleTimer();
     }
     let cardsCopy = cards.slice(0, cards.length);
-    let clickedCardClsNames = cards[index].classNames.slice(0, cards[index].classNames.length);
-
-    toggleShowCardClasses(clickedCardClsNames);
-    cardsCopy[index].classNames = clickedCardClsNames;
-    setCards(cardsCopy);
+    let clickedClsNamesCopy = cards[index].classNames.slice(0, cards[index].classNames.length);
     // Either the player has an active card open already or doesn't
-    // if (openCardIndex > -1) {
-    //   toggleShowCardClasses(clickedCardClsNames);
-    // } else {
-    //   toggleShowCardClasses(clickedCardClsNames);
-    // }
+    if (openCardIndex > -1) {
+      let openClsNamesCopy = cards[openCardIndex].classNames.slice(0, cards[openCardIndex].classNames.length);
+      const _setPair = () => {
+        cardsCopy[openCardIndex].classNames = openClsNamesCopy;
+        cardsCopy[index].classNames = clickedClsNamesCopy;
+        setCards(cardsCopy);
+      };
+
+      // Is this a matching card?
+      if (cardsCopy[index].icon === cardsCopy[openCardIndex].icon) {
+        addMatchedPair(openClsNamesCopy, clickedClsNamesCopy);
+        _setPair();
+      } else {
+        toggleShowCardClasses(openClsNamesCopy);
+        toggleBadMatchPair(openClsNamesCopy, clickedClsNamesCopy);
+        // Using a closure, otherwise there's a lot of variables to pass the callback
+        // on the setTimeout call
+        const badMatchTimeout = () => {
+          toggleBadMatchPair(openClsNamesCopy, clickedClsNamesCopy);
+          _setPair();
+        }
+        setTimeout(badMatchTimeout, 1000);
+        _setPair();
+      }
+      setOpenCardIndex(-1);
+    } else {
+      toggleShowCardClasses(clickedClsNamesCopy);
+      cardsCopy[index].classNames = clickedClsNamesCopy;
+      setOpenCardIndex(index);
+      setCards(cardsCopy);
+    }
   };
 
-  // const addMatchedPair = (firstCardCls: string[], secondCardCls: string[]) => {
-  //   toggleShowCardClasses(firstCardCls);
-  //   toggleMatchBounce(firstCardCls);
-  //   toggleMatchBounce(secondCardCls);
-  // }
+  const addMatchedPair = (firstCardCls: string[], secondCardCls: string[]) => {
+    toggleShowCardClasses(firstCardCls);
+    toggleMatchBounce(firstCardCls);
+    toggleMatchBounce(secondCardCls);
+  }
 
-  // const toggleMatchBounce = (arr: string[]) => {
-  //   for (const iterator of ['match', 'animated', 'bounce']) {
-  //     toggleClass(arr, iterator);
-  //   }
-  // }
+  const toggleMatchBounce = (arr: string[]) => {
+    for (const iterator of ['match', 'animated', 'bounce']) {
+      toggleClass(arr, iterator);
+    }
+  }
+
+  const toggleBadMatchPair = (firstCardCls: string[], secondCardCls: string[]) => {
+    toggleBadMatch(firstCardCls);
+    toggleBadMatch(secondCardCls);
+  };
+
+  const toggleBadMatch = (arr: string[]) => {
+    for (const iterator of ['open', 'show', 'bad-match', 'animated', 'shake']) {
+      toggleClass(arr, iterator);
+    }
+  };
 
   const toggleShowCardClasses = (arr: string[]) => {
     for (const iterator of ['open', 'show', 'animated', 'flipInY']) {
