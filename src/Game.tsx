@@ -12,67 +12,67 @@ const Game: React.FC = () => {
   let [cards, setCards] = useState<ICard[]>([
     {
       icon: 'fa-diamond',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-paper-plane-o',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-anchor',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-bolt',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-cube',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-anchor',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-leaf',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-bicycle',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-diamond',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-bomb',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-leaf',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-bomb',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-bolt',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-bicycle',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-paper-plane-o',
-      classNames: []
+      classNames: ['card']
     },
     {
       icon: 'fa-cube',
-      classNames: []
+      classNames: ['card']
     }
   ]);
   let [seconds, setSeconds] = useState(0);
@@ -116,7 +116,7 @@ const Game: React.FC = () => {
         _setPair();
       }
       setOpenCardIndex(-1);
-    } else {
+    } else { // First card of a pair clicked
       toggleShowCardClasses(clickedClsNamesCopy);
       cardsCopy[index].classNames = clickedClsNamesCopy;
       setOpenCardIndex(index);

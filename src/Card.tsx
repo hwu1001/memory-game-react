@@ -9,12 +9,7 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = (props) => {
   const cls = 'fa ' + props.icon;
-  let cardCls: string;
-  if (props.cardClassNames && props.cardClassNames.length > 0) {
-    cardCls = props.cardClassNames.join(' ') + ' card';
-  } else {
-    cardCls = 'card';
-  }
+  const cardCls = props.cardClassNames ? props.cardClassNames.join(' ') : '';
   
   return (
     <li className={cardCls} onClick={() => props.cardClickCb(props.index)}>
