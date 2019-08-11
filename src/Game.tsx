@@ -1,80 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './Game.css';
+import { ICard, STARTING_CARDS } from './ICard';
 import ScorePanel from './ScorePanel';
 import Card from './Card';
 
-interface ICard {
-  icon: string,
-  classNames: string[]
-}
-
 const Game: React.FC = () => {
-  let [cards, setCards] = useState<ICard[]>([
-    {
-      icon: 'fa-diamond',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-paper-plane-o',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-anchor',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-bolt',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-cube',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-anchor',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-leaf',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-bicycle',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-diamond',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-bomb',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-leaf',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-bomb',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-bolt',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-bicycle',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-paper-plane-o',
-      classNames: ['card']
-    },
-    {
-      icon: 'fa-cube',
-      classNames: ['card']
-    }
-  ]);
+  let [cards, setCards] = useState<ICard[]>(STARTING_CARDS);
   let [seconds, setSeconds] = useState(0);
   let [isTimerActive, setIsTimerActive] = useState(false);
   let [openCardIndex, setOpenCardIndex] = useState<number>(-1);
