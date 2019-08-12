@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Game.css';
 import { ICard, STARTING_CARDS, STARTING_STARS } from './GameStart';
 import ScorePanel from './ScorePanel';
+import WinModal from './WinModal';
 import Card from './Card';
 
 const Game: React.FC = () => {
@@ -12,6 +13,7 @@ const Game: React.FC = () => {
   let [movesCounter, setMovesCounter] = useState(0);
   let [stars, setStars] = useState(STARTING_STARS);
   let [starCounter, setStarCounter] = useState(3);
+  let [numMatchedCards, setNumMatchedCards] = useState(0);
 
   const handeCardClick = (index: number) => {
     // If a card is already selected or it's been matched then ignore click
@@ -69,7 +71,7 @@ const Game: React.FC = () => {
       let starCopy = stars.slice(0, stars.length);
       let starClsCopy = starCopy[starCounter - 1].slice(0, starCopy[starCounter - 1].length);
       for (const iterator of ['fa-star', 'fa-star-o']) {
-        toggleClass(starClsCopy, iterator); 
+        toggleClass(starClsCopy, iterator);
       }
       starCopy[starCounter - 1] = starClsCopy
       setStarCounter(starCounter - 1);
@@ -81,6 +83,7 @@ const Game: React.FC = () => {
     toggleShowCardClasses(firstCardCls);
     toggleMatchBounce(firstCardCls);
     toggleMatchBounce(secondCardCls);
+    setNumMatchedCards(numMatchedCards + 2);
   }
 
   const toggleMatchBounce = (arr: string[]) => {
@@ -125,6 +128,8 @@ const Game: React.FC = () => {
     setMovesCounter(0);
     setStarCounter(3);
     setStars(STARTING_STARS);
+    setCards(STARTING_CARDS);
+    setNumMatchedCards(0);
   };
 
   const padTimeString = (val: number): string => {
@@ -142,13 +147,13 @@ const Game: React.FC = () => {
       setSeconds(seconds => seconds + 1);
     };
 
-    if (isTimerActive) {
+    if (isTimerActive && numMatchedCards < 16) {
       interval = setInterval(t, 1000);
     } else if (!isTimerActive && seconds !== 0) {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [isTimerActive, seconds]);
+  }, [isTimerActive, seconds, numMatchedCards]);
 
   useEffect(() => {
     const shuffle = (arr: ICard[]) => {
@@ -168,7 +173,6 @@ const Game: React.FC = () => {
     setCards(c => shuffle(c));
   }, []); // runs only once, not on every re-render
 
-
   return (
     <div className="container">
       <header>
@@ -181,16 +185,26 @@ const Game: React.FC = () => {
         stars={stars}
         resetCb={reset}
       />
+      {numMatchedCards === 16
+        ? <WinModal
+          minutes={padTimeString(Math.floor(seconds / 60))}
+          seconds={padTimeString(Math.floor(seconds % 60))}
+          moves={movesCounter.toString()}
+          stars={starCounter.toString()}
+          playAgainCb={reset}
+        />
+        : null
+      }
       <ul className="deck">
         {cards.map((card, index) => {
-        return (
-          <Card
-            key={index}
-            icon={card.icon}
-            index={index}
-            cardClickCb={handeCardClick}
-            cardClassNames={card.classNames} 
-          />);
+          return (
+            <Card
+              key={index}
+              icon={card.icon}
+              index={index}
+              cardClickCb={handeCardClick}
+              cardClassNames={card.classNames}
+            />);
         })}
       </ul>
     </div>
