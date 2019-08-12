@@ -67,9 +67,11 @@ const Game: React.FC = () => {
   const updateStars = () => {
     if (starCounter > 1 && (movesCounter === 23 || movesCounter === 33)) {
       let starCopy = stars.slice(0, stars.length);
+      let starClsCopy = starCopy[starCounter - 1].slice(0, starCopy[starCounter - 1].length);
       for (const iterator of ['fa-star', 'fa-star-o']) {
-        toggleClass(starCopy[starCounter - 1], iterator); 
+        toggleClass(starClsCopy, iterator); 
       }
+      starCopy[starCounter - 1] = starClsCopy
       setStarCounter(starCounter - 1);
       setStars(starCopy);
     }
@@ -121,6 +123,8 @@ const Game: React.FC = () => {
     setSeconds(0);
     setIsTimerActive(false);
     setMovesCounter(0);
+    setStarCounter(3);
+    setStars(STARTING_STARS);
   };
 
   const padTimeString = (val: number): string => {
