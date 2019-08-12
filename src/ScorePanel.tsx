@@ -3,6 +3,7 @@ import React from 'react';
 interface ScorePanelProps {
   minutesDisplay: string,
   secondsDisplay: string,
+  moves: string,
   resetCb: () => void
 }
 
@@ -14,7 +15,7 @@ const ScorePanel: React.FC<ScorePanelProps> = (props) => {
         <li><i className="fa fa-star"></i></li>
         <li><i className="fa fa-star"></i></li>
       </ul>
-        <span className="moves">0</span> Moves 
+        <span className="moves">{props.moves}</span> Moves 
         <span className="timer">
           Timer:
           <span id="minutes">{props.minutesDisplay}</span>:<span id="seconds">{props.secondsDisplay}</span>

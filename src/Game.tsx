@@ -9,6 +9,7 @@ const Game: React.FC = () => {
   let [seconds, setSeconds] = useState(0);
   let [isTimerActive, setIsTimerActive] = useState(false);
   let [openCardIndex, setOpenCardIndex] = useState<number>(-1);
+  let [movesCounter, setMovesCounter] = useState(0);
 
   const handeCardClick = (index: number) => {
     if (cards[index].classNames.includes('open') || cards[index].classNames.includes('match')) {
@@ -46,12 +47,15 @@ const Game: React.FC = () => {
         setTimeout(badMatchTimeout, 1000);
         _setPair();
       }
+      // Clear open card for next set of selections
       setOpenCardIndex(-1);
+      setMovesCounter(movesCounter + 1);
     } else { // First card of a pair clicked
       toggleShowCardClasses(clickedClsNamesCopy);
       cardsCopy[index].classNames = clickedClsNamesCopy;
       setOpenCardIndex(index);
       setCards(cardsCopy);
+      setMovesCounter(movesCounter + 1);
     }
   };
 
@@ -100,6 +104,7 @@ const Game: React.FC = () => {
   const reset = () => {
     setSeconds(0);
     setIsTimerActive(false);
+    setMovesCounter(0);
   };
 
   const padTimeString = (val: number): string => {
@@ -152,6 +157,7 @@ const Game: React.FC = () => {
       <ScorePanel
         minutesDisplay={padTimeString(Math.floor(seconds / 60))}
         secondsDisplay={padTimeString(Math.floor(seconds % 60))}
+        moves={movesCounter.toString()}
         resetCb={reset}
       />
       <ul className="deck">
