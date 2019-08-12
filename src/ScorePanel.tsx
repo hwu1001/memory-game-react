@@ -4,6 +4,7 @@ interface ScorePanelProps {
   minutesDisplay: string,
   secondsDisplay: string,
   moves: string,
+  stars: string[][],
   resetCb: () => void
 }
 
@@ -11,9 +12,7 @@ const ScorePanel: React.FC<ScorePanelProps> = (props) => {
   return (
     <section className="score-panel">
       <ul className="stars">
-        <li><i className="fa fa-star"></i></li>
-        <li><i className="fa fa-star"></i></li>
-        <li><i className="fa fa-star"></i></li>
+        {props.stars.map((clsNames, i) => <li key={i}><i className={clsNames.join(' ')}></i></li>)}
       </ul>
         <span className="moves">{props.moves}</span> Moves 
         <span className="timer">

@@ -10,8 +10,15 @@ const Game: React.FC = () => {
   let [isTimerActive, setIsTimerActive] = useState(false);
   let [openCardIndex, setOpenCardIndex] = useState<number>(-1);
   let [movesCounter, setMovesCounter] = useState(0);
+  let [stars, setStars] = useState([
+    ['fa', 'fa-star'],
+    ['fa', 'fa-star'],
+    ['fa', 'fa-star']
+  ]);
+  let [starCounter, setStarCounter] = useState(3);
 
   const handeCardClick = (index: number) => {
+    // If a card is already selected or it's been matched then ignore click
     if (cards[index].classNames.includes('open') || cards[index].classNames.includes('match')) {
       return;
     }
@@ -50,14 +57,27 @@ const Game: React.FC = () => {
       // Clear open card for next set of selections
       setOpenCardIndex(-1);
       setMovesCounter(movesCounter + 1);
+      updateStars();
     } else { // First card of a pair clicked
       toggleShowCardClasses(clickedClsNamesCopy);
       cardsCopy[index].classNames = clickedClsNamesCopy;
       setOpenCardIndex(index);
       setCards(cardsCopy);
       setMovesCounter(movesCounter + 1);
+      updateStars();
     }
   };
+
+  const updateStars = () => {
+    if (starCounter > 1 && (movesCounter === 23 || movesCounter === 33)) {
+      let starCopy = stars.slice(0, stars.length);
+      for (const iterator of ['fa-star', 'fa-star-o']) {
+        toggleClass(starCopy[starCounter - 1], iterator); 
+      }
+      setStarCounter(starCounter - 1);
+      setStars(starCopy);
+    }
+  }
 
   const addMatchedPair = (firstCardCls: string[], secondCardCls: string[]) => {
     toggleShowCardClasses(firstCardCls);
@@ -158,6 +178,7 @@ const Game: React.FC = () => {
         minutesDisplay={padTimeString(Math.floor(seconds / 60))}
         secondsDisplay={padTimeString(Math.floor(seconds % 60))}
         moves={movesCounter.toString()}
+        stars={stars}
         resetCb={reset}
       />
       <ul className="deck">
