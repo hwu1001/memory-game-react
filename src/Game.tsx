@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Game.css';
-import { ICard, STARTING_CARDS } from './ICard';
+import { ICard, STARTING_CARDS, STARTING_STARS } from './GameStart';
 import ScorePanel from './ScorePanel';
 import Card from './Card';
 
@@ -10,11 +10,7 @@ const Game: React.FC = () => {
   let [isTimerActive, setIsTimerActive] = useState(false);
   let [openCardIndex, setOpenCardIndex] = useState<number>(-1);
   let [movesCounter, setMovesCounter] = useState(0);
-  let [stars, setStars] = useState([
-    ['fa', 'fa-star'],
-    ['fa', 'fa-star'],
-    ['fa', 'fa-star']
-  ]);
+  let [stars, setStars] = useState(STARTING_STARS);
   let [starCounter, setStarCounter] = useState(3);
 
   const handeCardClick = (index: number) => {

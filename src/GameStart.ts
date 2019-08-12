@@ -69,3 +69,9 @@ export const STARTING_CARDS = [
     classNames: ['card']
   }
 ];
+
+export const STARTING_STARS = [
+  ['fa', 'fa-star'],
+  ['fa', 'fa-star'],
+  ['fa', 'fa-star']
+];
