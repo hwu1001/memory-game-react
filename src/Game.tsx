@@ -6,18 +6,20 @@ import WinModal from './WinModal';
 import Card from './Card';
 
 const Game: React.FC = () => {
+  // TODO: Consolidate some of this state, many updates can happen together
   let [cards, setCards] = useState<ICard[]>(STARTING_CARDS);
   let [seconds, setSeconds] = useState(0);
   let [isTimerActive, setIsTimerActive] = useState(false);
   let [openCardIndex, setOpenCardIndex] = useState<number>(-1);
+  let [openBadMatch, setOpenBadMatch] = useState(false);
   let [movesCounter, setMovesCounter] = useState(0);
   let [stars, setStars] = useState(STARTING_STARS);
   let [starCounter, setStarCounter] = useState(3);
   let [numMatchedCards, setNumMatchedCards] = useState(0);
 
-  const handeCardClick = (index: number) => {
+  const handeCardClick = (clickedCardIndex: number) => {
     // If a card is already selected or it's been matched then ignore click
-    if (cards[index].classNames.includes('open') || cards[index].classNames.includes('match')) {
+    if (cards[clickedCardIndex].classNames.includes('open') || cards[clickedCardIndex].classNames.includes('match') || openBadMatch) {
       return;
     }
 
@@ -25,29 +27,38 @@ const Game: React.FC = () => {
     if (!isTimerActive) {
       toggleTimer();
     }
+    // This is a new array, but the objects in it are references, not copies
     let cardsCopy = cards.slice(0, cards.length);
-    let clickedClsNamesCopy = cards[index].classNames.slice(0, cards[index].classNames.length);
+    let clickedClsNamesCopy = cards[clickedCardIndex].classNames.slice(0, cards[clickedCardIndex].classNames.length);
     // Either the player has an active card open already or doesn't
     if (openCardIndex > -1) {
       let openClsNamesCopy = cards[openCardIndex].classNames.slice(0, cards[openCardIndex].classNames.length);
       const _setPair = () => {
-        cardsCopy[openCardIndex].classNames = openClsNamesCopy;
-        cardsCopy[index].classNames = clickedClsNamesCopy;
+        // Create copies of the relevant cards
+        let openObjCopy = createICardCopy(cardsCopy[openCardIndex]);
+        openObjCopy.classNames = openClsNamesCopy;
+        let clickedObjCopy = createICardCopy(cardsCopy[clickedCardIndex]);
+        clickedObjCopy.classNames = clickedClsNamesCopy;
+        // Reference those copies instead of the originals
+        cardsCopy[openCardIndex] = openObjCopy;
+        cardsCopy[clickedCardIndex] = clickedObjCopy;
         setCards(cardsCopy);
       };
 
       // Is this a matching card?
-      if (cardsCopy[index].icon === cardsCopy[openCardIndex].icon) {
+      if (cardsCopy[clickedCardIndex].icon === cardsCopy[openCardIndex].icon) {
         addMatchedPair(openClsNamesCopy, clickedClsNamesCopy);
         _setPair();
       } else {
         toggleShowCardClasses(openClsNamesCopy);
         toggleBadMatchPair(openClsNamesCopy, clickedClsNamesCopy);
+        setOpenBadMatch(true);
         // Using a closure, otherwise there's a lot of variables to pass the callback
         // on the setTimeout call
         const badMatchTimeout = () => {
           toggleBadMatchPair(openClsNamesCopy, clickedClsNamesCopy);
           _setPair();
+          setOpenBadMatch(false);
         }
         setTimeout(badMatchTimeout, 1000);
         _setPair();
@@ -58,12 +69,18 @@ const Game: React.FC = () => {
       updateStars();
     } else { // First card of a pair clicked
       toggleShowCardClasses(clickedClsNamesCopy);
-      cardsCopy[index].classNames = clickedClsNamesCopy;
-      setOpenCardIndex(index);
+      let curObjCopy = createICardCopy(cardsCopy[clickedCardIndex]);
+      curObjCopy.classNames = clickedClsNamesCopy;
+      cardsCopy[clickedCardIndex] = curObjCopy;
+      setOpenCardIndex(clickedCardIndex);
       setCards(cardsCopy);
       setMovesCounter(movesCounter + 1);
       updateStars();
     }
+  };
+
+  const createICardCopy = (origCard: ICard): ICard => {
+    return { icon: origCard.icon, classNames: origCard.classNames.slice(0, origCard.classNames.length) };
   };
 
   const updateStars = () => {
@@ -128,7 +145,7 @@ const Game: React.FC = () => {
     setMovesCounter(0);
     setStarCounter(3);
     setStars(STARTING_STARS);
-    setCards(STARTING_CARDS);
+    setCards(shuffle(STARTING_CARDS));
     setNumMatchedCards(0);
   };
 
@@ -141,6 +158,23 @@ const Game: React.FC = () => {
     }
   };
 
+  const shuffle = (arr: ICard[]) => {
+    let retArr = arr.slice(0, arr.length);
+    let curIndex = retArr.length;
+    let tempValue: ICard;
+    let randomIndex: number;
+    while (curIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * curIndex);
+      curIndex -= 1;
+      tempValue = retArr[curIndex];
+      retArr[curIndex] = retArr[randomIndex];
+      retArr[randomIndex] = tempValue;
+    }
+    return retArr;
+  };
+
+  // TODO: Look into whether useEffect or useReducer should be used on more of the logic above
+  // Not sure what should be just done through `set...` calls outside and in useEffect
   useEffect(() => {
     let interval: number | undefined;
     const t: TimerHandler = () => {
@@ -156,20 +190,6 @@ const Game: React.FC = () => {
   }, [isTimerActive, seconds, numMatchedCards]);
 
   useEffect(() => {
-    const shuffle = (arr: ICard[]) => {
-      let retArr = arr.slice(0, arr.length);
-      let curIndex = retArr.length;
-      let tempValue: ICard;
-      let randomIndex: number;
-      while (curIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * curIndex);
-        curIndex -= 1;
-        tempValue = retArr[curIndex];
-        retArr[curIndex] = retArr[randomIndex];
-        retArr[randomIndex] = tempValue;
-      }
-      return retArr;
-    };
     setCards(c => shuffle(c));
   }, []); // runs only once, not on every re-render
 

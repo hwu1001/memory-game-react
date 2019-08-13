@@ -21,7 +21,7 @@ const WinModal: React.FC<WinModalProps> = (props) => {
             points="100.2,40.2 51.5,88.8 29.8,67.5 " />
         </svg>
         <h2>Congratulations! You Won!</h2>
-        <h4>With a time of <span id="modal-min">{props.minutes}</span>:<span id="modal-sec">{props.seconds}</span>, <span id="modal-moves">{props.moves}</span> moves, and <span id="modal-stars">{props.stars}</span> stars.</h4>
+        <h4>With a time of <span id="modal-min">{props.minutes}</span>:<span id="modal-sec">{props.seconds}</span>, <span id="modal-moves">{props.moves}</span> moves, and <span id="modal-stars">{props.stars}</span> {props.stars === '1' ? 'star': 'stars'}.</h4>
         <h4>Woooo!</h4>
         <button id="modal-button" onClick={_onClickHandler}>Play again!</button>
       </div>
